@@ -51,15 +51,23 @@ It is not clear to use which embedding in what situation, but based on comparati
 Other than words character level language model also performs comparable result to represent text meaning. Character model is used with NLP in two approach. One is encoding entire text as sequence of character and the other is enhancing word vectors by concatenation sub-word information of each words to their vector. In practice the later outperformed the former approach. In languages such as Amharic, a word is usually composed of several characters and contains rich internal information since semantic meaning of a word is also related to the meanings of its composing characters. Enhancing word embedding with character embedding may improve the embedding capacity of word embeddings in morphologically rich language such as Amharic. It allows us to tackle mechanics problem (i.e., spelling errors and heterogeneity in word formation) happen in writing. Character encoding can be performed either RNN or CNN. As stated by Zhang et al., using CNN model for encoding character has advantage on treating morphemes due to the property of CNN in extracting informative feature. Moreover, it is recommended technique to represent out-of-vocabulary words with their character level information than treating them as zero encoded or with dummy randomized vectors.
 # Amharic FastText Vectors
 I Expermented FastText for Amharic word vectors using Gensim Library with the following hyperparamets as Amharic is one of morphologically rich language.
+To identify word context in different situation we have considered social, sport, political, and business sub domains for news domain; bible, blogs, and written documents from spiritual domain; Amharic Wikipedia; and three selective course modules  collected from Jimma University Department of Amharic Language and Literature. In addition we comprised of all student answers collected for evaluating SQM  as additional domain dataset. To collect web dependent data, we used HTTRACK Website Copier as offline crawler to copy files from web. Python based BeautifulSoup  library is used to extract text content from web files crawled. Then after small preprocessing such as tokenization and normalization we used to train FastText model that can able to extract Amharic word meaning from given corpus. 
+<table>
+	<caption> Amharic word embedding data description</caption>
+	<tr><th>Total Document</th><th>No. of Tokens</th></No. of Unique Words</th></tr>
+	<tr><td>32,941</td><td>40,816,929</td><td>275,829</td></tr>
+	</table>
+
 <br>
-Hyper parameter	Value
-Window	5,10
-Embedding dimension	100 ,300
-Learning rate	0.05
-Workers	30
-Negative Sampling	10,15
-Iteration 	10
-N-gram size	3,6
+<ul>Hyper parameter	Value
+	<li>Window	5,10</li>
+	<li>Embedding dimension	100 ,300</li>
+	<li>Learning rate	0.05</li>
+	<li>Workers	30</li>
+	<li>Negative Sampling	10,15</li>
+	<li>Iteration 	10</li>
+	<li>N-gram size	3,6</li>
+</ul>
 
 ![alt text](model1.png "Visualizing morphologically related Amharic words in vector space")<br>
 From the above figure we can visualize that our domain trained FastText model is capable of clustering syntactically related word to their semantic space. Moreover, it detected word with spelling error ‘የህዝ’ to say ‘የህዝብ’. It interesting feature of our FastText model is its ability to cluster words with different morphological varietiy, but same in meaning. It also shows different mophological variants of Amharic word is clustered to one their semaintically related words.  
