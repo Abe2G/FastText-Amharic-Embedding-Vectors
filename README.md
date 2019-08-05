@@ -22,8 +22,8 @@ Next we compute score of each input vectors of output layer and finally we compu
 Step 4: Compute probability distribution of target word.
 Finally, the output y_j i.e., the jth unit in output layer, is obtained by passing the input u_j through the soft-max function. The Softmax log-linear classification model used to calculate the probability distribution of the target word given a specific context is:<br>
 p(w_y│w_1,⋯,w_c )=exp(u_j )/(∑_(j=1)^v/(exp(u_j^' ) )  
-
-![alt text](images/cbow.png "Word2Vec CBOW model")
+<br>
+![alt text](cbow.png "Word2Vec CBOW model")
 
 # Skip-gram Model
 Instead of using the surrounding words to predict the center word as with CBOW, skip-gram uses the center word to predict the surrounding words as can be seen as opposite of CBOW model as shown in Figure 2-3 below. The input of the skip-gram model is a single target word and the output is the words in w_I's context {w_o,1,⋯w_o,C} defined by a word window of size. We still use v_WI  to denote the input vector of the only word on the input layer, and thus we have the same definition of the hidden→layer outputs h as in CBOW, which means h is simply copying (and transposing) a row of the input→hidden weight matrix, W, associated with the input word . 
@@ -34,8 +34,8 @@ In the same way, the inputs to each C x V of the output nodes is computed by the
 u_(c_j )=〖v'_(w_j )〗^T h                                                                                
 However we can observe that the output layers for each output word share the same weights therefore u_(c_j )=u_j. We can finally compute the output of the jth node of the cth output word via the Softmax function which produces a multinomial distribution.
  p(w_(c,j)=w_(0,c)│w_I  )=y_(c,j)=exp(u_(c,j) )/(∑_(j=1)^v▒exp(u_j ) )                                                
-In simple term, this value is the probability that the output of the jth node of the cth output word is equal to the actual value of the jth index of the cth output vector (which is one-hot encoded).
-![alt text](images/skipgram.png "Word2Vec SkipGram model")
+In simple term, this value is the probability that the output of the jth node of the cth output word is equal to the actual value of the jth index of the cth output vector (which is one-hot encoded).<br>
+![alt text](skipgram.png "Word2Vec SkipGram model")
 
 # FastText 
 Motivated by, Google’s word2vec embeddings, in 2016 Facebook released an embedding model that recently attracted a great deal from the machine learning community especially for morphologically rich languages called FastText. The main goal of the FastText embeddings is to take into account the internal structure of words while learning word representations; this is especially useful for morphologically rich languages like Amharic, where otherwise the representations for different morphological forms of words would be learnt independently. The limitation becomes even more important when these words occur rarely unless we use external language dependent tools such as morphological analyzers. The semantic and syntactic information of words that is contained in these vectors make them powerful features for NLP tasks. 
@@ -61,10 +61,10 @@ Negative Sampling	10,15
 Iteration 	10
 N-gram size	3,6
 
-![alt text](images/model1.png "Visualizing morphologically related Amharic words in vector space")
+![alt text](model1.png "Visualizing morphologically related Amharic words in vector space")<br>
 From the above figure we can visualize that our domain trained FastText model is capable of clustering syntactically related word to their semantic space. Moreover, it detected word with spelling error ‘የህዝ’ to say ‘የህዝብ’. It interesting feature of our FastText model is its ability to cluster words with different morphological varietiy, but same in meaning. It also shows different mophological variants of Amharic word is clustered to one their semaintically related words.  
 
-![alt text](images/model2.png "Sample visualization of semantically clustered FastText embeddings in vector space")
+![alt text](model2.png "Sample visualization of semantically clustered FastText embeddings in vector space")
 
 Another interesting feature of our word representation module is its capacity to cluster words on their semantic category. From the above Figure our FastText model categorized Amharic words such ወር, ቀን, ሰዓት to one category using as time measurement. We can see that ሜትር and ኪሎ are clustered together. It clusters large number ሚሊየን, ቢሊዮን, ትሪሊዮን, and ሺህ to one; በአማካይ and በመቶ; ክፍያ, ወጪ and ገቢ at one category. Because of space limit we visualized only sample ones. This shows that our word vectors are semantically and syntactically rich and our SQM model easily get meaning of words using this embeddings.
 # References
