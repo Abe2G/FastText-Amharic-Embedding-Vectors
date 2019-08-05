@@ -51,10 +51,10 @@ It is not clear to use which embedding in what situation, but based on comparati
 Other than words character level language model also performs comparable result to represent text meaning. Character model is used with NLP in two approach. One is encoding entire text as sequence of character and the other is enhancing word vectors by concatenation sub-word information of each words to their vector. In practice the later outperformed the former approach. In languages such as Amharic, a word is usually composed of several characters and contains rich internal information since semantic meaning of a word is also related to the meanings of its composing characters. Enhancing word embedding with character embedding may improve the embedding capacity of word embeddings in morphologically rich language such as Amharic. It allows us to tackle mechanics problem (i.e., spelling errors and heterogeneity in word formation) happen in writing. Character encoding can be performed either RNN or CNN. As stated by Zhang et al., using CNN model for encoding character has advantage on treating morphemes due to the property of CNN in extracting informative feature. Moreover, it is recommended technique to represent out-of-vocabulary words with their character level information than treating them as zero encoded or with dummy randomized vectors.
 # Amharic FastText Vectors
 I Expermented FastText for Amharic word vectors using Gensim Library with the following hyperparamets as Amharic is one of morphologically rich language.
-To identify word context in different situation we have considered social, sport, political, and business sub domains for news domain; bible, blogs, and written documents from spiritual domain; Amharic Wikipedia; and three selective course modules  collected from Jimma University Department of Amharic Language and Literature. In addition we comprised of all student answers collected for evaluating SQM  as additional domain dataset. To collect web dependent data, we used HTTRACK Website Copier as offline crawler to copy files from web. Python based BeautifulSoup  library is used to extract text content from web files crawled. Then after small preprocessing such as tokenization and normalization we used to train FastText model that can able to extract Amharic word meaning from given corpus. 
+To identify word context in different situation we have considered social, sport, political, and business sub domains for news domain; bible, blogs, and written documents from spiritual domain; Amharic Wikipedia; and course modules from Amharic Language and Literature such as “የዘገባ አፃፃፍና አስተውሎታዊ እሳቤ (Report Writing and Critical Thinking), የቋንቋና ሥነልሳን ጥናት, and ህዝብ ግንኙነት (public relation)”. To collect web dependent data, we used HTTRACK Website Copier as offline crawler to copy files from web. Python based <a href="https://pypi.python.org/pypi/beautifulsoup4">BeautifulSoup</a>  library is used to extract text content from web files crawled. Then after small preprocessing such as tokenization and normalization we used to train FastText model that can able to extract Amharic word meaning from given corpus. <br>
 <table>
 	<caption> Amharic word embedding data description</caption>
-	<tr><th>Total Document</th><th>No. of Tokens</th></No. of Unique Words</th></tr>
+	<tr><th>Total Document</th><th>No. of Tokens</th><th></No. of Unique Words</th></tr>
 	<tr><td>32,941</td><td>40,816,929</td><td>275,829</td></tr>
 	</table>
 
@@ -68,7 +68,78 @@ To identify word context in different situation we have considered social, sport
 	<li>Iteration 	10</li>
 	<li>N-gram size	3,6</li>
 </ul>
+# Code 
+<pre>
+import logging
+import os
+from gensim.models.fasttext import FastText
 
+from gensim.models import KeyedVectors
+EMBEDDING_DIR=''
+PREPROCESSED_DIR=''
+class WordEmbeddingConfig(object):
+    """Word2Vec Training parameters"""
+    window=5 #Maximum skip length window between words
+    emb_dim=300 # Set size of word vectors
+    emb_lr=0.05 #learning rate for SGD estimation.
+    nepoach=20 #number of training epochs
+    nthread=100 #number of training threads
+    sample = 0 #Set threshold for occurrence of words. Those that appear with higher frequency in the training data will be randomly down-sampled
+    negative = 15 #negative sampling is used with defined negative example
+    hs = 0 #0 Use Hierarchical Softmax; default is 0 (not used)
+    binary=0 # 0 means not saved as .bin. Change to 1 if allowed to binary format
+    sg=1 # 0 means CBOW model is used. Change to 1 to use Skip-gram model
+    iterate=10 # Run more training iterations
+    minFreq=2 #This will discard words that appear less than minFreq times 
+    WORD_VECTOR_CACHE=EMBEDDING_DIR+'am_word_vectors_sts.npy'
+    if sg==0:
+        model_name='am_fasttext_cbow_'+str(emb_dim)+'D'
+    elif sg==1:
+         model_name='am_fasttext_sg_'+str(emb_dim)+'D'
+         
+class corpus_sentences(object):# accept sentence stored one per line in list of files inside defined directory
+    def __init__(self, dirname):
+        self.dirname = dirname
+ 
+    def __iter__(self):
+        for answer in data:
+            words=nltk.word_tokenize(answer)
+            yield words
+
+logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.DEBUG)
+
+
+def load_am_word_vectors():
+    if WordEmbeddingConfig.sg==0:
+            model_type='CBOW'
+    else:
+        model_type='Skip-gram'        
+    if os.path.exists(WordEmbeddingConfig.model_name):
+        print('Loading Word2Vec Amharic Pretrained '+model_type+' model with '+str(WordEmbeddingConfig.emb_dim)+' dimension\n') 
+        am_model= KeyedVectors.load(TrainConfig.model_name)
+    else:
+        print('Loading Sentences with memory freindly iterator ...\n')
+        sentences = corpus_sentences(PREPROCESSED_DIR) # a memory-friendly iterator        
+        print('Training FastText '+model_type+' with '+str(WordEmbeddingConfig.emb_dim)+' dimension\n') 
+        am_model = FastText(size=WordEmbeddingConfig.emb_dim, window=WordEmbeddingConfig.window, 
+                            min_count=WordEmbeddingConfig.minFreq, workers=WordEmbeddingConfig.nthread,sg=WordEmbeddingConfig.sg,
+                            iter=WordEmbeddingConfig.iterate,negative=WordEmbeddingConfig.negative,
+                            hs=WordEmbeddingConfig.hs)
+        am_model.build_vocab(sentences)
+
+        am_model.train(sentences, total_examples=am_model.corpus_count, epochs=am_model.iter)
+        #trim unneeded model memory = use (much) less RAM
+        am_model.init_sims(replace=True)
+        
+        #Saving model    
+        model_name=DirConfig.EMBEDDING_DIR+WordEmbeddingConfig.model_name
+        am_model.save(model_name)        
+        
+    return am_model            
+
+
+am_model=load_am_word_vectors()
+</pre>
 ![alt text](model1.png "Visualizing morphologically related Amharic words in vector space")<br>
 From the above figure we can visualize that our domain trained FastText model is capable of clustering syntactically related word to their semantic space. Moreover, it detected word with spelling error ‘የህዝ’ to say ‘የህዝብ’. It interesting feature of our FastText model is its ability to cluster words with different morphological varietiy, but same in meaning. It also shows different mophological variants of Amharic word is clustered to one their semaintically related words.  
 
