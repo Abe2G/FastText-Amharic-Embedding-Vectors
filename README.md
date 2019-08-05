@@ -1,0 +1,1 @@
+# FastText-Amharic-Embedding-Vectors
