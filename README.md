@@ -1,5 +1,5 @@
 # FastText-Amharic-Embedding-Vectors
-
+Toget word vectors and other related files, please refer into [AM-Vectors Repository](https://github.com/Abe2G/AM-Vectors)
 # Neural Word Embedding
 Word embeddings are one of the few currently successful applications of unsupervised learning. Their main benefit arguably is that they don't require expensive annotation, but can be derived from large unannotated corpora that are readily available. The term word embeddings is coined in 2003, but the eventual popularization of word embedding can be attributed to Mikolov et al., in 2013 who created word2vec, a toolkit that allows the seamless training and use of English pre-trained embedding. In 2016, Facebook released another predictive model called FastText that represent word information through sub-words or character n-grams. FastText is extension of word2vec model by extending character n-gram feature.<br/>
 # Word2Vec
